@@ -112,21 +112,38 @@ with st.container():
 
 # Prediction
 if predict_button:
-    st.divider()
-    st.header("Output")
+    print("Predicting...")
 
-    if "img" in st.session_state:
-        st.success(f"Font: Arieal")
-    else:
-        st.warning("Please upload an image to predict the font")
+# When final prediction is ready, display the output
+
+# indent section starts here)
+st.divider()
+st.header("Output")
+
+# Mock prediction logic for demonstration purposes
+output = [
+    {"Font": "Arial", "Confidence": 0.95},
+    {"Font": "Helvetica", "Confidence": 0.90},
+    {"Font": "Times New Roman", "Confidence": 0.85},
+    {"Font": "Courier New", "Confidence": 0.80},
+    {"Font": "Verdana", "Confidence": 0.75},
+]
+
+prediction = pd.DataFrame(output)
+
+st.dataframe(
+    prediction,
+    use_container_width=True,
+    hide_index=True,
+    column_config={"Confidence": st.column_config.ProgressColumn(width="medium")},
+)
+
+top_font = output[0]["Font"]
+st.success(f"Top Font: {top_font}")
+
+# indent section ends here
 
 st.divider()
-
-# About App
-st.header("How does the App work?")
-st.write(
-    "The App uses a **Machine Learning Model** to predict the font used in the input provided by the user. The model is trained on a dataset of fonts and their corresponding images."
-)
 
 # Dataset Info
 st.header("About the Dataset")

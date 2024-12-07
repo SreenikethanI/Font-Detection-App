@@ -59,10 +59,8 @@ st.divider()
 st.header("Inputs")
 with st.container():
     col1, col2 = st.columns(2)
-    with col1:
-        character = st.text_input("Enter Character", max_chars=1)
 
-    with col2:
+    with col1:
         with st.container():
 
             font_image = st.file_uploader(
@@ -73,6 +71,7 @@ with st.container():
 
             if font_image:
                 if "img" not in st.session_state:
+                    st.session_state.img = None
                     img = Image.open(font_image)
                     crop(img)
                 else:
@@ -82,7 +81,11 @@ with st.container():
                         caption=f"Character: {character}",
                     )
             else:
-                st.session_state.pop("img")
+                if "img" in st.session_state:
+                    st.session_state.pop("img")
                 st.warning("Please upload an image")
+
+    with col2:
+        character = st.text_input("Enter Character", max_chars=1)
 
     predict_button = st.button("Predict", use_container_width=True)

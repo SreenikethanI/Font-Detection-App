@@ -9,7 +9,6 @@ def crop(img):
     st.write("Preview")
     st.image(
         cropped_img,
-        caption=f"Character: {character}",
     )
     if st.button("Save Crop"):
         st.session_state.img = cropped_img
@@ -42,6 +41,12 @@ st.header("About the Dataset")
 st.write(
     "The dataset used to train the model is the **[Font Dataset](https://archive.ics.uci.edu/dataset/417/character+font+images)**. The dataset contains images from 153 character fonts."
 )
+with st.expander("Show Dataset Description"):
+    st.write(
+        "The dataset contains images from 153 character fonts. Each font has 20 images of each character. The dataset contains images of the following characters: **A-Z, a-z, 0-9**."
+    )
+    # Add sample data from dataset
+
 
 st.header("About the Model")
 st.write(
@@ -52,7 +57,7 @@ st.header("About the Developers")
 st.write(
     "This App is developed by **Team 1** of the **Foundations of Data Science Course**. The team members are:"
 )
-st.write("- **Eman**\n" "- **Joe**\n" "- **Sreeni**\n" "- **Yusra**\n")
+st.write("- **Eman**\n" "- **Joe**\n" "- **eeni**\n" "- **Yusi**\n")
 
 st.divider()
 
@@ -78,7 +83,7 @@ with st.container():
                     cropped_img = st.session_state.img
                     st.image(
                         cropped_img,
-                        caption=f"Character: {character}",
+                        # caption=f"Character: {character}",
                     )
             else:
                 if "img" in st.session_state:

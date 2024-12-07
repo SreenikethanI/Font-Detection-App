@@ -1,4 +1,20 @@
 import streamlit as st
+from streamlit_cropper import st_cropper
+from PIL import Image
+
+
+@st.dialog("Crop the image to the character")
+def crop(img):
+    cropped_img = st_cropper(img, realtime_update=True, aspect_ratio=None)
+    st.write("Preview")
+    st.image(
+        cropped_img,
+        caption=f"Character: {character}",
+    )
+    if st.button("Save Crop"):
+        st.session_state.img = cropped_img
+        st.rerun()
+
 
 st.title("🔠 Font Detection App ig?")
 st.write(
@@ -48,15 +64,25 @@ with st.container():
 
     with col2:
         with st.container():
+
             font_image = st.file_uploader(
-                "Upload Image", type=["jpg", "png", "jpeg"], accept_multiple_files=False
+                "Upload Image",
+                type=["jpg", "png", "jpeg"],
+                accept_multiple_files=False,
             )
 
-            if font_image is not None:
-                st.image(
-                    font_image,
-                    caption=f"Character: {character}",
-                    use_container_width=True,
-                )
+            if font_image:
+                if "img" not in st.session_state:
+                    img = Image.open(font_image)
+                    crop(img)
+                else:
+                    cropped_img = st.session_state.img
+                    st.image(
+                        cropped_img,
+                        caption=f"Character: {character}",
+                    )
+            else:
+                st.session_state.pop("img")
+                st.warning("Please upload an image")
 
     predict_button = st.button("Predict", use_container_width=True)

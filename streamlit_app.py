@@ -9,7 +9,7 @@ st.set_page_config(
 )
 st.title("🔠 Machine Learning Based Font Detection App")
 st.write(
-    "This is a demo of the assignment in the **Foundations of Data Science Course (CS F323)**"
+    "This is a demo of the assignment in the **Foundations of Data Science Course (CS F320)**"
 )
 
 # Tutorial
@@ -34,6 +34,7 @@ st.divider()
 
 # Input Section
 st.header("✒️ Inputs")
+
 
 # fn for crop dialog
 @st.dialog("🖼️ Crop the image to the character", width="large")
@@ -151,23 +152,31 @@ For each font, images are generated for a wide range of characters, including:
 - **Uppercase letters**: `A-Z`  
 - **Lowercase letters**: `a-z`  
 - **Digits**: `0-9`  
-- **Symbols**: All common characters on a QWERTY keyboard (e.g., `@`, `#`, `$`, `%`, `&`, etc.)  
 
 Each image is preprocessed to a consistent size of **32x32 pixels** and stored in a dataset for training.  
 
 The goal of using synthetic data is to create a highly diverse dataset that helps the model generalize well across different fonts and character styles. By training on a wide variety of fonts, the model learns to recognize subtle differences in character shapes and styles, making it robust and reliable for font detection tasks.    """
 )
-with st.expander("Sample from Dataset", icon="📈"):
-    # Add sample data from dataset
-    df = pd.DataFrame(
-        [
-            {"command": "st.selectbox", "rating": 4, "is_widget": True},
-            {"command": "st.balloons", "rating": 5, "is_widget": False},
-            {"command": "st.time_input", "rating": 3, "is_widget": True},
-        ]
-    )
 
-    st.dataframe(df, use_container_width=True)
+
+def left_align(s, props="text-align: left;"):
+    return props
+
+
+with st.expander("Fonts Used in Dataset", icon="❗"):
+    df = pd.read_csv("frontend_demo.csv")
+    st.dataframe(
+        df,
+        hide_index=True,
+        column_config={
+            "Font Name": st.column_config.Column(width="small"),
+            "Sample Text": st.column_config.ImageColumn(
+                label=None, width="large", help=None
+            ),
+        },
+        use_container_width=True,
+    )
+    # Add sample data from dataset
 
 # Model Info
 st.header("🤖 About the Model")

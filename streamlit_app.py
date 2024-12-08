@@ -39,7 +39,7 @@ st.header("✒️ Inputs")
 @st.dialog("🖼️ Crop the image to the character", width="large")
 def crop(img: Image.Image):
     SCALE = st.slider("Zoom", 1, 5, 2)
-    box = st_cropper(
+    cropped_img, box = st_cropper(
         img.resize((img.width * SCALE, img.height * SCALE)),
         realtime_update=True,
         aspect_ratio=None,

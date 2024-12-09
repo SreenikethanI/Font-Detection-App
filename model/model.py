@@ -121,7 +121,7 @@ class SimbleModel:
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.label_reverse_mapping = sorted(font_names)
         self.model = FontIdentificationModel(len(font_names), ord(max(ALNUM)), char_code_dim=128)
-        self.model.load_state_dict(torch.load(model_path, weights_only=True))
+        self.model.load_state_dict(torch.load(model_path, weights_only=True, map_location=self.device))
         self.model.eval()
 
     def predict(self, img: Image.Image, char_code: int) -> list[tuple[str, float]]:

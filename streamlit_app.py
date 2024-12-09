@@ -10,7 +10,7 @@ MODEL_PATH = "model/e29 b00324 - l 0.94693 (complete).pth"
 FONTNAMES_PATH = "model/fontnames all.txt"
 
 if "model" not in st.session_state:
-    st.session_state.model = SimbleModel(MODEL_PATH, FONTNAMES_PATH)
+    st.session_state["model"] = SimbleModel(MODEL_PATH, FONTNAMES_PATH)
 
 # MARK: Content/Tutorial
 st.set_page_config(

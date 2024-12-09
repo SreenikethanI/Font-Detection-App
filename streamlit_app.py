@@ -1,7 +1,8 @@
+# MARK: Import Statements
 import streamlit as st
 from streamlit_cropper import st_cropper
 import pandas as pd
-from PIL import Image, ImageEnhance
+from PIL import Image, ImageEnhance, ImageOps
 
 st.set_page_config(
     page_title="Font detection app",
@@ -10,7 +11,7 @@ st.set_page_config(
 st.title("🔠 Machine Learning Based Font Detection App")
 "This is a demo of the assignment in the **Foundations of Data Science Course (CS F320)**"
 
-# Tutorial
+# MARK: Tutorial
 with st.expander("**How to use the App?**", icon="❓"):
     st.write(
         """
@@ -30,16 +31,25 @@ with st.expander("**How to use the App?**", icon="❓"):
 
 st.divider()
 
-# Input Section
+# MARK: Input Section
 st.header("✒️ Inputs")
 
 
 # fn for crop dialog
+# MARK: Crop Dialog
 @st.dialog("🖼️ Crop the image to the character", width="large")
 def crop(img: Image.Image):
+
+    st.write(
+        """
+             Adjust the crop area to isolate the character you want to detect.
+             Adjust the Sliders and Invert image to make the character more visible.
+             """
+    )
     SCALE = st.slider("Zoom", 1, 5, 2)
     CONTRAST = st.slider("Contrast", 0.5, 2.0, 1.0)
     BRIGHTNESS = st.slider("Brightness", 0.0, 2.0, 1.0)
+
     cropped_img, box = st_cropper(
         img.resize((img.width * SCALE, img.height * SCALE)),
         realtime_update=True,
@@ -64,6 +74,9 @@ def crop(img: Image.Image):
     enhancer = ImageEnhance.Brightness(final_image)
     final_image = enhancer.enhance(BRIGHTNESS)
 
+    inv = st.checkbox("Invert Image", False)
+    final_image = ImageOps.invert(final_image) if inv else final_image
+
     st.write("Preview")
     st.image(final_image)
     if st.button("Save Crop"):
@@ -71,6 +84,7 @@ def crop(img: Image.Image):
         st.rerun()
 
 
+# MARK: Upload and Character Input
 with st.container():
     col1, col2 = st.columns(2)
 
@@ -113,7 +127,7 @@ with st.container():
         disabled="img" not in st.session_state or not character,
     )
 
-# Prediction
+# MARK: Prediction
 if predict_button:
     print("Predicting...")
 
@@ -121,6 +135,7 @@ if predict_button:
 
 # indent section starts here
 st.divider()
+# MARK: Output Section
 st.header("📊 Output")
 
 # Mock prediction logic for demonstration purposes
@@ -148,7 +163,7 @@ st.success(f"Top Font: {top_font}")
 
 st.divider()
 
-# Dataset Info
+# MARK: Dataset Info
 st.header("📈 About the Dataset")
 st.write(
     """
@@ -161,13 +176,9 @@ For each font, images are generated for a wide range of characters, including:
 
 Each image is preprocessed to a consistent size of **32x32 pixels** and stored in a dataset for training.  
 
-The goal of using synthetic data is to create a highly diverse dataset that helps the model generalize well across different fonts and character styles. By training on a wide variety of fonts, the model learns to recognize subtle differences in character shapes and styles, making it robust and reliable for font detection tasks.    """
+The goal of using synthetic data is to create a highly diverse dataset that helps the model generalize well across different fonts and character styles. By training on a wide variety of fonts, the model learns to recognize subtle differences in character shapes and styles, making it robust and reliable for font detection tasks.
+"""
 )
-
-
-def left_align(s, props="text-align: left;"):
-    return props
-
 
 with st.expander("Fonts Used in Dataset", icon="❗"):
     df = pd.read_csv("frontend_demo.csv")
@@ -182,38 +193,31 @@ with st.expander("Fonts Used in Dataset", icon="❗"):
         },
         use_container_width=True,
     )
-    # Add sample data from dataset
 
-# Model Info
+# MARK: Model Info
 st.header("🤖 About the Model")
 st.write(
     """
-**ResNet-18** is a deep learning model from the ResNet (Residual Network) family, designed to solve the challenges of training very deep neural networks, particularly the problem of vanishing gradients. It achieves this through the use of **residual blocks**, which introduce *skip connections* that allow the model to learn identity mappings and preserve information across layers.  
-
-With **18 layers**, ResNet-18 strikes a balance between performance and computational efficiency. It is lightweight compared to deeper ResNet variants and is widely used in applications like:  
-- **Image Classification**: Categorizing images into predefined labels.  
-- **Feature Extraction**: Generating high-quality feature representations for other tasks.  
-- **Vision Applications**: Serving as a backbone for object detection and segmentation models.  
-
-ResNet-18's design ensures that it is robust, versatile, and efficient, making it an ideal choice for projects requiring reliable performance with limited computational resources.
+The model used in this app is a **Convolutional Neural Network (CNN)** trained on the font dataset. CNNs are a class of deep learning models that are particularly effective for image classification tasks.
     """
 )
 
 st.divider()
 
+# MARK: Team and References
 st.write(
     """
 ## 💻 About the Developers
 
-- **Eman**  
-- **Joe**  
-- **eeni**  
-- **Yusi**  
+- **Yusra Hakim - 2022A7PS0004**  
+- **Joseph Cijo - 2022A7PS0019**  
+- **Sreenikethan Iyer - 2022A7PS0034**  
+- **Mohammed Emaan - 2022A7PS0036**  
 
 ## 📚 References
 
 - **[Font Dataset](https://archive.ics.uci.edu/dataset/417/character+font+images)**  
 - **[Pillow](https://pillow.readthedocs.io/en/stable/)**  
-- **[idk](idk sm)**  
+- **Z. Wang, J. Yang, H. Jin, et. al., "DeepFont: Identify Your Font from An Image" [Available (DOI)](https://doi.org/10.48550/arXiv.1507.03196)**  
     """
 )

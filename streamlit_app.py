@@ -58,12 +58,12 @@ def crop(img: Image.Image):
     CONTRAST = st.slider("Contrast", 0.5, 2.0, 1.0)
     BRIGHTNESS = st.slider("Brightness", 0.0, 2.0, 1.0)
 
-    cropped_img, box = st_cropper(
+    box = st_cropper(
         img.resize((img.width * SCALE, img.height * SCALE)),
         realtime_update=True,
         aspect_ratio=None,
         should_resize_image=True,
-        return_type="both",
+        return_type="box",
     )
 
     # left, upper, right, lower

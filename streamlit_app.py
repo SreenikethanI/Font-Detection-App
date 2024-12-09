@@ -209,10 +209,10 @@ st.write(
     """
 ## 💻 About the Developers
 
-- **Yusra Hakim - 2022A7PS0004**  
-- **Joseph Cijo - 2022A7PS0019**  
-- **Sreenikethan Iyer - 2022A7PS0034**  
-- **Mohammed Emaan - 2022A7PS0036**  
+- **Yusra Hakim - 2022A7PS0004U**  
+- **Joseph Cijo - 2022A7PS0019U**  
+- **Sreenikethan Iyer - 2022A7PS0034U**  
+- **Mohammed Emaan - 2022A7PS0036U**  
 
 ## 📚 References
 

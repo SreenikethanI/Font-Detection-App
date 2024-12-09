@@ -8,9 +8,7 @@ st.set_page_config(
     layout="wide",
 )
 st.title("🔠 Machine Learning Based Font Detection App")
-st.write(
-    "This is a demo of the assignment in the **Foundations of Data Science Course (CS F320)**"
-)
+"This is a demo of the assignment in the **Foundations of Data Science Course (CS F320)**"
 
 # Tutorial
 with st.expander("**How to use the App?**", icon="❓"):

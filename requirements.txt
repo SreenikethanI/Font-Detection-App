@@ -5,7 +5,6 @@ torchvision
 streamlit
 streamlit-cropper
 
-opencv-contrib-python-headless
 matplotlib
 numpy
 pandas

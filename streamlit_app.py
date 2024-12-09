@@ -3,7 +3,16 @@ import streamlit as st
 from streamlit_cropper import st_cropper
 import pandas as pd
 from PIL import Image, ImageEnhance, ImageOps
+from model.model import SimbleModel
 
+# MARK: Creating and loading model
+MODEL_PATH = "model/e29 b00324 - l 0.94693 (complete).pth"
+FONTNAMES_PATH = "model/fontnames all.txt"
+
+if not "model" in st.session_state:
+    st.session_state.model = SimbleModel(MODEL_PATH, FONTNAMES_PATH)
+
+# MARK: Content/Tutorial
 st.set_page_config(
     page_title="Font detection app",
     layout="wide",
@@ -11,7 +20,6 @@ st.set_page_config(
 st.title("🔠 Machine Learning Based Font Detection App")
 "This is a demo of the assignment in the **Foundations of Data Science Course (CS F320)**"
 
-# MARK: Tutorial
 with st.expander("**How to use the App?**", icon="❓"):
     st.write(
         """

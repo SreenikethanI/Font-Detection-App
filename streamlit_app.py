@@ -1,7 +1,7 @@
 import streamlit as st
 from streamlit_cropper import st_cropper
 import pandas as pd
-from PIL import Image
+from PIL import Image, ImageEnhance
 
 st.set_page_config(
     page_title="Font detection app",
@@ -38,6 +38,8 @@ st.header("✒️ Inputs")
 @st.dialog("🖼️ Crop the image to the character", width="large")
 def crop(img: Image.Image):
     SCALE = st.slider("Zoom", 1, 5, 2)
+    CONTRAST = st.slider("Contrast", 0.5, 2.0, 1.0)
+    BRIGHTNESS = st.slider("Brightness", 0.0, 2.0, 1.0)
     cropped_img, box = st_cropper(
         img.resize((img.width * SCALE, img.height * SCALE)),
         realtime_update=True,
@@ -55,6 +57,12 @@ def crop(img: Image.Image):
             (box["top"] + box["height"]) / SCALE,
         )
     )
+
+    final_image = final_image.convert("L")
+    enhancer = ImageEnhance.Contrast(final_image)
+    final_image = enhancer.enhance(CONTRAST)
+    enhancer = ImageEnhance.Brightness(final_image)
+    final_image = enhancer.enhance(BRIGHTNESS)
 
     st.write("Preview")
     st.image(final_image)

@@ -9,7 +9,7 @@ from model.model import SimbleModel
 MODEL_PATH = "model/e29 b00324 - l 0.94693 (complete).pth"
 FONTNAMES_PATH = "model/fontnames all.txt"
 
-if not "model" in st.session_state:
+if "model" not in st.session_state:
     st.session_state.model = SimbleModel(MODEL_PATH, FONTNAMES_PATH)
 
 # MARK: Content/Tutorial
@@ -23,16 +23,16 @@ st.title("🔠 Machine Learning Based Font Detection App")
 with st.expander("**How to use the App?**", icon="❓"):
     st.write(
         """
-    1. **Upload an Image**:  
+    1. **Upload an Image**:
     Click the **"Upload Image"** button and select an image file containing the text or character you want to analyze. Supported formats: **JPG, PNG, JPEG**.
 
-    2. **Crop the Image**:  
+    2. **Crop the Image**:
     Once the image is uploaded, a cropping dialog will appear. Adjust the crop area to isolate the character you want to detect. When done, click **"Save Crop"** to store the cropped character.
 
-    3. **Enter the Character**:  
+    3. **Enter the Character**:
     In the text input field, type the character you cropped. **Make sure it matches exactly** (case-sensitive) to ensure accurate predictions.
 
-    4. **Predict the Font**:  
+    4. **Predict the Font**:
     Click the **"Predict"** button to process your input through the model. The app will display the predicted font in the **Output** section.
         """
     )
@@ -137,37 +137,47 @@ with st.container():
 
 # MARK: Prediction
 if predict_button:
-    print("Predicting...")
+    if "model" not in st.session_state:
+        st.error("⚠️ The model is not loaded yet, please try again.")
 
-# When final prediction is ready, display the output
+    else:
+        print("Predicting...")
 
-# indent section starts here
-st.divider()
-# MARK: Output Section
-st.header("📊 Output")
+        # When final prediction is ready, display the output
 
-# Mock prediction logic for demonstration purposes
-output = [
-    {"Font": "Arial", "Confidence": 0.95},
-    {"Font": "Helvetica", "Confidence": 0.90},
-    {"Font": "Times New Roman", "Confidence": 0.85},
-    {"Font": "Courier New", "Confidence": 0.80},
-    {"Font": "Verdana", "Confidence": 0.75},
-]
+        # indent section starts here
+        st.divider()
 
-prediction = pd.DataFrame(output)
+        # MARK: Output Section
+        st.header("📊 Output")
 
-st.dataframe(
-    prediction,
-    use_container_width=True,
-    hide_index=True,
-    column_config={"Confidence": st.column_config.ProgressColumn(width="large")},
-)
+        # Mock prediction logic for demonstration purposes
+        # output = [
+        #     {"Font": "Arial", "Confidence": 0.95},
+        #     {"Font": "Helvetica", "Confidence": 0.90},
+        #     {"Font": "Times New Roman", "Confidence": 0.85},
+        #     {"Font": "Courier New", "Confidence": 0.80},
+        #     {"Font": "Verdana", "Confidence": 0.75},
+        # ]
+        output = [
+            {"Font": font_name, "Confidence": score}
+            for font_name, score in
+            st.session_state.model.predict(st.session_state.img, ord(character))
+        ]
 
-top_font = output[0]["Font"]
-st.success(f"Top Font: {top_font}")
+        prediction = pd.DataFrame(output)
 
-# indent section ends here
+        st.dataframe(
+            prediction,
+            use_container_width=True,
+            hide_index=True,
+            column_config={"Confidence": st.column_config.ProgressColumn(width="large")},
+        )
+
+        top_font = output[0]["Font"]
+        st.success(f"Top font: {top_font}")
+
+        # indent section ends here
 
 st.divider()
 
@@ -175,14 +185,14 @@ st.divider()
 st.header("📈 About the Dataset")
 st.write(
     """
-The dataset used to train the model is synthetically generated with the help of the **[Pillow](https://pillow.readthedocs.io/en/stable/)** library. It is created using 173 commonly available fonts found on most modern Windows devices.  
+The dataset used to train the model is synthetically generated with the help of the **[Pillow](https://pillow.readthedocs.io/en/stable/)** library. It is created using 173 commonly available fonts found on most modern Windows devices.
 
-For each font, images are generated for a wide range of characters, including:  
-- **Uppercase letters**: `A-Z`  
-- **Lowercase letters**: `a-z`  
-- **Digits**: `0-9`  
+For each font, images are generated for a wide range of characters, including:
+- **Uppercase letters**: `A-Z`
+- **Lowercase letters**: `a-z`
+- **Digits**: `0-9`
 
-Each image is preprocessed to a consistent size of **32x32 pixels** and stored in a dataset for training.  
+Each image is preprocessed to a consistent size of **32x32 pixels** and stored in a dataset for training.
 
 The goal of using synthetic data is to create a highly diverse dataset that helps the model generalize well across different fonts and character styles. By training on a wide variety of fonts, the model learns to recognize subtle differences in character shapes and styles, making it robust and reliable for font detection tasks.
 """
@@ -217,15 +227,15 @@ st.write(
     """
 ## 💻 About the Developers
 
-- **Yusra Hakim - 2022A7PS0004U**  
-- **Joseph Cijo - 2022A7PS0019U**  
-- **Sreenikethan Iyer - 2022A7PS0034U**  
-- **Mohammed Emaan - 2022A7PS0036U**  
+- **Yusra Hakim - 2022A7PS0004U**
+- **Joseph Cijo - 2022A7PS0019U**
+- **Sreenikethan Iyer - 2022A7PS0034U**
+- **Mohammed Emaan - 2022A7PS0036U**
 
 ## 📚 References
 
-- **[Font Dataset](https://archive.ics.uci.edu/dataset/417/character+font+images)**  
-- **[Pillow](https://pillow.readthedocs.io/en/stable/)**  
-- **Z. Wang, J. Yang, H. Jin, et. al., "DeepFont: Identify Your Font from An Image" [Available (DOI)](https://doi.org/10.48550/arXiv.1507.03196)**  
+- **[Font Dataset](https://archive.ics.uci.edu/dataset/417/character+font+images)**
+- **[Pillow](https://pillow.readthedocs.io/en/stable/)**
+- **Z. Wang, J. Yang, H. Jin, et. al., "DeepFont: Identify Your Font from An Image" [Available (DOI)](https://doi.org/10.48550/arXiv.1507.03196)**
     """
 )

@@ -20,6 +20,48 @@ def load_fontnames(path: str) -> list[str]:
     with open(path, "r") as f:
         return [ls for line in f.readlines() if not (ls := line.strip()).startswith("#") and ls]
 
+def get_top_bottom(arr, thresh: float, color: float):
+    """Used by getbbox2. Don't touch this. You are not diddy"""
+
+    top, bottom = 0, arr.shape[0]
+
+    for y, row in enumerate(arr):
+        if abs(row - color).max() <= thresh: top = y
+        else: break
+
+    for y in range(arr.shape[0])[::-1]:
+        row = arr[y]
+        if abs(row - color).max() <= thresh: bottom = y
+        else: break
+
+    return top, bottom
+
+def getbbox2(img: Image.Image, thresh: float=0.5, color=1.0) -> tuple[int, int, int, int]:
+    """`getbbox` but then with any color, and with a threshold setting, i.e.
+    lower threshold means all the pixels in a row/column should be closer to
+    `color`.
+
+    `color`: 0.0 = black, 1.0 = white."""
+
+    pixels = (np.array(img) / 255.0) ** 2.2
+    pixels_rotated = pixels.transpose()
+
+    top, bottom = get_top_bottom(pixels, thresh, color)
+    left, right = get_top_bottom(pixels_rotated, thresh, color)
+
+    return (left, top, right, bottom)
+
+def prepare_image(img: Image.Image, size: int, pad: int=2, color: int=255, thresh: float=0.5) -> Image.Image:
+    """Does three things:
+    1. Removes extra whitespace from all sides
+    2. Resizes to square
+    3. Adds a `pad`-px padding on all sides to reach the desired `size`
+
+    `color` is a value from 0 to 255. Check `getbbox2` docstring for `thresh`
+    """
+    bbox = getbbox2(img, thresh, (color / 255.0) ** 2.2) # 1.0 = white
+    return transforms.Pad(pad, (color,))(img.crop(bbox).resize((size-2*pad, size-2*pad)))
+
 class FontIdentificationModel(nn.Module):
     def __init__(self, num_fonts, largest_char_code: int, char_code_dim=64):
         super(FontIdentificationModel, self).__init__()
@@ -70,6 +112,9 @@ class FontIdentificationModel(nn.Module):
         return x
 
 class SimbleModel:
+    """Very simble model. Create a Model object with path to the model file and
+    path to the text file containing font names. Call `predict()`."""
+
     def __init__(self, model_path: str, font_names_path: str):
         font_names = load_fontnames(font_names_path)
 
@@ -80,7 +125,15 @@ class SimbleModel:
         self.model.eval()
 
     def predict(self, img: Image.Image, char_code: int) -> list[tuple[str, float]]:
-        img_transformed = transform_image_no_affine(torch.tensor(np.array(img))).unsqueeze(dim=0)
+        """Very simble function. Pass in the image and the character code, and
+        this returns a sorted list of `(font_name, score)` tuples. Score ranges
+        from 0.0 to 1.0."""
+
+        # Prepare image by removing excess padding, etc.
+        img_prep = prepare_image(img.convert("L"), 64)
+
+        img_transformed = transform_image_no_affine(torch.tensor(np.array(img_prep))).unsqueeze(dim=0)
+
         with torch.no_grad():
             outputs = nn.Softmax(dim=0)(self.model(
                 img_transformed.to(self.device),
@@ -88,6 +141,6 @@ class SimbleModel:
             ).squeeze(dim=0))
 
         return sorted([
-            (self.label_reverse_mapping[i], score*100)
+            (self.label_reverse_mapping[i], score)
             for i, score in enumerate(outputs.tolist())
         ], key=lambda x: (-x[1], x[0]))

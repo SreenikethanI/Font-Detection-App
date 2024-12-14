@@ -18,11 +18,15 @@ st.set_page_config(
     layout="wide",
 )
 st.title("🔠 Machine Learning Based Font Detection App")
-"This is a demo of the assignment in the **Foundations of Data Science Course (CS F320)**"
+st.write(
+    """
+This is a demo of the assignment in the Foundations of Data Science Course (CS F320). The app allows users to upload images of text, and it will predict the font used in the image. The model has been trained on a diverse set of fonts to ensure accurate recognition.
+    """
+)
 
 with st.expander("**How to use the App?**", icon="❓"):
     st.write(
-        """
+    """
     1. **Upload an Image**:
     Click the **"Upload Image"** button and select an image file containing the text or character you want to analyze. Supported formats: **JPG, PNG, JPEG**.
 
@@ -34,7 +38,7 @@ with st.expander("**How to use the App?**", icon="❓"):
 
     4. **Predict the Font**:
     Click the **"Predict"** button to process your input through the model. The app will display the predicted font in the **Output** section.
-        """
+    """
     )
 
 st.divider()
@@ -141,28 +145,16 @@ if predict_button:
         st.error("⚠️ The model is not loaded yet, please try again.")
 
     else:
-        print("Predicting...")
-
-        # When final prediction is ready, display the output
-
-        # indent section starts here
         st.divider()
 
         # MARK: Output Section
         st.header("📊 Output")
 
-        # Mock prediction logic for demonstration purposes
-        # output = [
-        #     {"Font": "Arial", "Confidence": 0.95},
-        #     {"Font": "Helvetica", "Confidence": 0.90},
-        #     {"Font": "Times New Roman", "Confidence": 0.85},
-        #     {"Font": "Courier New", "Confidence": 0.80},
-        #     {"Font": "Verdana", "Confidence": 0.75},
-        # ]
         output = [
             {"Font": font_name, "Confidence": score}
-            for font_name, score in
-            st.session_state.model.predict(st.session_state.img, ord(character))
+            for font_name, score in st.session_state.model.predict(
+                st.session_state.img, ord(character)
+            )
         ]
 
         prediction = pd.DataFrame(output)
@@ -171,13 +163,13 @@ if predict_button:
             prediction,
             use_container_width=True,
             hide_index=True,
-            column_config={"Confidence": st.column_config.ProgressColumn(width="large")},
+            column_config={
+                "Confidence": st.column_config.ProgressColumn(width="large")
+            },
         )
 
         top_font = output[0]["Font"]
         st.success(f"Top font: {top_font}")
-
-        # indent section ends here
 
 st.divider()
 
@@ -216,9 +208,17 @@ with st.expander("Fonts Used in Dataset", icon="❗"):
 st.header("🤖 About the Model")
 st.write(
     """
-The model used in this app is a **Convolutional Neural Network (CNN)** trained on the font dataset. CNNs are a class of deep learning models that are particularly effective for image classification tasks.
+The model used in this app is a **Convolutional Neural Network (CNN)** trained on the font dataset. CNNs are a class of deep learning models that are particularly effective for image classification tasks.  
+More details on the model can be found on @SreenikethanI's Repository [here]().
     """
 )
+
+with st.expander("Confusion Matrix", icon="⁉️"):
+    st.image(
+        "assets/Confusion Matrix (P).png",
+        use_container_width=True,
+        caption='Confusion Matrix of the Character "P"',
+    )
 
 st.divider()
 

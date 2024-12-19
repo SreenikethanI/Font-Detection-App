@@ -60,6 +60,9 @@ else:
         CONTRAST = st.slider("Contrast", 0.5, 2.0, 1.0)
         BRIGHTNESS = st.slider("Brightness", 0.0, 2.0, 1.0)
 
+        THRESHOLD_ACTIVATE = st.checkbox(label="Enable mono threshold?")
+        THRESHOLD_SLIDER = st.slider("Mono threshold", min_value=0, max_value=255, value=127, disabled=not THRESHOLD_ACTIVATE)
+
         box = st_cropper(
             img.resize((img.width * SCALE, img.height * SCALE)),
             realtime_update=True,
@@ -81,6 +84,8 @@ else:
         final_image = final_image.convert("L")
         final_image = ImageEnhance.Contrast(final_image).enhance(CONTRAST)
         final_image = ImageEnhance.Brightness(final_image).enhance(BRIGHTNESS)
+        if THRESHOLD_ACTIVATE:
+            final_image = final_image.point([255 if val >= THRESHOLD_SLIDER else 0 for val in range(256)], mode="L")
 
         inv = st.checkbox("Invert image?", False)
         if inv: final_image = ImageOps.invert(final_image)

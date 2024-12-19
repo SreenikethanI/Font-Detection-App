@@ -3,6 +3,7 @@ from streamlit_cropper import st_cropper
 import pandas as pd
 from PIL import Image, ImageEnhance, ImageOps
 from model.model import SimbleModel
+import numpy as np
 
 MODEL_PATH = "model/e29 b00324 - l 0.94693 (complete).pth"
 FONTNAMES_PATH = "model/fontnames all.txt"
@@ -57,11 +58,11 @@ else:
         SCALE = st.slider("Zoom", 1, 5, 2)
 
         st.write("Adjust the following so that the resulting image is **black text on white background.**")
-        CONTRAST = st.slider("Contrast", 0.5, 2.0, 1.0)
+        CONTRAST = st.slider("Contrast", 0.5, 5.0, 1.0)
         BRIGHTNESS = st.slider("Brightness", 0.0, 2.0, 1.0)
 
-        THRESHOLD_ACTIVATE = st.checkbox(label="Enable mono threshold?")
-        THRESHOLD_SLIDER = st.slider("Mono threshold", min_value=0, max_value=255, value=127, disabled=not THRESHOLD_ACTIVATE)
+        # THRESHOLD_ACTIVATE = st.checkbox(label="Enable mono threshold?")
+        # THRESHOLD_SLIDER = st.slider("Mono threshold", min_value=0, max_value=255, value=127, disabled=not THRESHOLD_ACTIVATE)
 
         box = st_cropper(
             img.resize((img.width * SCALE, img.height * SCALE)),
@@ -84,8 +85,15 @@ else:
         final_image = final_image.convert("L")
         final_image = ImageEnhance.Contrast(final_image).enhance(CONTRAST)
         final_image = ImageEnhance.Brightness(final_image).enhance(BRIGHTNESS)
-        if THRESHOLD_ACTIVATE:
-            final_image = final_image.point([255 if val >= THRESHOLD_SLIDER else 0 for val in range(256)], mode="L")
+        # if THRESHOLD_ACTIVATE:
+        #     margin = 20
+
+        #     map = list(range(256))
+        #     map[:max(0, THRESHOLD_SLIDER-margin)] = [0] * max(0, THRESHOLD_SLIDER-margin)
+        #     map[max(0, THRESHOLD_SLIDER-margin):min(THRESHOLD_SLIDER+margin, 255)] = np.linspace(0, 255, 2*margin, endpoint=True, dtype=np.uint8)
+        #     map[min(THRESHOLD_SLIDER+margin, 255):] = [255] * (256 - min(THRESHOLD_SLIDER+margin, 255))
+
+        #     final_image = final_image.point(map, mode="L")
 
         inv = st.checkbox("Invert image?", False)
         if inv: final_image = ImageOps.invert(final_image)
